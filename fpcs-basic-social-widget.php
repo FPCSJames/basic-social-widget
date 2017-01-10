@@ -1,16 +1,5 @@
 <?php
-/**
- * FPCS Basic Social Widget
- *
- * Displays a row of clickable social media icons. Best in footer sections.
- *
- * @package   FPCS_Basic_Social_Widget
- * @author    James M. Joyce
- * @license   GPL-2.0+
- * @link      http://www.flashpointcs.net
- * @copyright 2017 Flashpoint Computer Services, LLC
- *
- * @wordpress-plugin
+/*
  * Plugin Name:       FPCS Basic Social Widget
  * Plugin URI:        https://github.com/FPCSJames/basic-social-widget
  * Description:       Displays a row of clickable social media icons. Best in footer sections.
@@ -20,7 +9,6 @@
  * Text Domain:       fpcs-basic-social-widget
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Domain Path:       /lang
  * GitHub Plugin URI: https://github.com/FPCSJames/basic-social-widget
  */
  
@@ -33,10 +21,6 @@ class FPCS_Basic_Social_Widget extends WP_Widget {
     /**
      * Unique identifier for this widget.
      *
-     * The variable name is used as the text domain when internationalizing strings
-     * of text. Its value should match the Text Domain file header in the main
-     * widget file.
-     *
      * @since    1.0.0
      *
      * @var      string
@@ -45,19 +29,16 @@ class FPCS_Basic_Social_Widget extends WP_Widget {
 
 	/**
 	 * Specifies the classname and description, instantiates the widget,
-	 * loads localization files, and includes necessary stylesheets and JavaScript.
+	 * and includes necessary stylesheets and JavaScript.
 	 */
 	public function __construct() {
 
-		// load plugin text domain
-		add_action( 'init', array( $this, 'widget_textdomain' ) );
-
 		parent::__construct(
-			$this->get_widget_slug(),
-			__( 'FPCS Basic Social Widget', $this->get_widget_slug() ),
+			$this->widget_slug,
+			__( 'FPCS Basic Social Widget', 'fpcs-basic-social-widget' ),
 			array(
-				'classname'  => $this->get_widget_slug().'-class',
-				'description' => __( 'Displays a row of clickable social media icons. Best in footer sections.', $this->get_widget_slug() )
+				'classname'  => $this->widget_slug,
+				'description' => __( 'Displays a row of clickable social media icons. Best in footer sections.', $this->widget_slug )
 			)
 		);
 
@@ -75,18 +56,6 @@ class FPCS_Basic_Social_Widget extends WP_Widget {
 
 	}
 
-
-    /**
-     * Return the widget slug.
-     *
-     * @since    1.0.0
-     *
-     * @return   Plugin slug variable.
-     */
-    public function get_widget_slug() {
-        return $this->widget_slug;
-    }
-
 	/*--------------------------------------------------*/
 	/* Widget API Functions
 	/*--------------------------------------------------*/
@@ -100,7 +69,7 @@ class FPCS_Basic_Social_Widget extends WP_Widget {
 	public function widget( $args, $instance ) {
 		
 		// Check if there is a cached output
-		$cache = wp_cache_get( $this->get_widget_slug(), 'widget' );
+		$cache = wp_cache_get( $this->widget_slug, 'widget' );
 
 		if ( !is_array( $cache ) )
 			$cache = array();
@@ -137,36 +106,24 @@ class FPCS_Basic_Social_Widget extends WP_Widget {
 		$pinterest = esc_url( $pinterest );
 		$instagram = esc_url( $instagram );
 		
-		if ( true === $enqueue_fa ) {
-			wp_enqueue_script( 'fpcsbsw-fontawesome' );
-		}
-		
 		$widget_string = $before_widget;
 		$widget_string .= $before_title . $title . $after_title;
 		
-		$inline_style = sprintf(
-			'.fpcs-basic-social-widget a{background-color:$1%s}.fpcs-basic-social-widget a:hover{background-color:$2%s}',
-			$color_background,
-			$color_background_hover
-		);
-		
-		wp_add_inline_style($this->get_widget_slug(), $inline_style);
-		
 		ob_start();
-		include( plugin_dir_path( __FILE__ ) . 'views/widget.php' );
+		include( plugin_dir_path( __FILE__ ) . 'view-widget.php' );
 		$widget_string .= ob_get_clean();
 		$widget_string .= $after_widget;
 
 		$cache[ $args['widget_id'] ] = $widget_string;
 
-		wp_cache_set( $this->get_widget_slug(), $cache, 'widget' );
+		wp_cache_set( $this->widget_slug, $cache, 'widget' );
 
 		print $widget_string;
 
 	}
 	
 	public function flush_widget_cache() {
-    	wp_cache_delete( $this->get_widget_slug(), 'widget' );
+    	wp_cache_delete( $this->widget_slug, 'widget' );
 	}
 	
 	/**
@@ -227,20 +184,13 @@ class FPCS_Basic_Social_Widget extends WP_Widget {
 		$instagram = esc_url($instagram);
 
 		// Display the admin form
-		include( plugin_dir_path(__FILE__) . 'views/admin.php' );
+		include( plugin_dir_path(__FILE__) . 'view-admin.php' );
 
 	}
 
 	/*--------------------------------------------------*/
 	/* Public Functions
 	/*--------------------------------------------------*/
-
-	/**
-	 * Loads the Widget's text domain for localization and translation.
-	 */
-	public function widget_textdomain() {
-		load_plugin_textdomain( $this->get_widget_slug(), false, plugin_dir_path( __FILE__ ) . 'lang/' );
-	}
 
 	/**
 	 * Registers and enqueues admin-specific styles.
@@ -255,17 +205,31 @@ class FPCS_Basic_Social_Widget extends WP_Widget {
 	public function register_admin_scripts() {
 		wp_enqueue_script( 'wp-color-picker' );
 		wp_enqueue_script( 'underscore' );
-		wp_enqueue_script( $this->get_widget_slug().'-admin-script', plugins_url( 'js/admin.min.js', __FILE__ ), ['jquery', 'wp-color-picker', 'underscore'] );
+		wp_enqueue_script( $this->widget_slug . '-admin-script', plugins_url( 'js/admin.min.js', __FILE__ ), ['jquery', 'wp-color-picker', 'underscore'] );
 	}
 
 	/**
 	 * Registers and enqueues widget-specific styles.
 	 */
 	public function register_widget_styles() {
-		wp_register_style( 'fpcsbsw-fontawesome', plugins_url( 'css/font-awesome.min.css', __FILE__ ) );
-		wp_enqueue_style( $this->get_widget_slug(), plugins_url( 'css/widget.min.css', __FILE__ ) );
+		
+		$instance = $this->get_settings()[ str_replace( $this->widget_slug. '-', '', $this->id ) ];
+		if ( true === $instance['enqueue_fa'] ) {
+			wp_enqueue_style( $this->widget_slug . '-fontawesome', plugins_url( 'css/font-awesome.min.css', __FILE__ ), [], '4.7.0' );
+			wp_enqueue_style( $this->widget_slug, plugins_url( 'css/widget.min.css', __FILE__ ), [ $this->widget_slug . '-fontawesome' ], '1.0.0' );
+		} else {
+			wp_enqueue_style( $this->widget_slug, plugins_url( 'css/widget.min.css', __FILE__ ), [], '1.0.0' );
+		}
+		
+		$inline_css = sprintf(
+			'#%1$s a{background-color:%2$s;}#%1$s a:hover{background-color:%3$s;}',
+			$this->id,
+			$instance['color_background'],
+			$instance['color_background_hover']
+		);
+		wp_add_inline_style( $this->widget_slug, $inline_css );
+		
 	}
 
 }
-
 add_action( 'widgets_init', function() { register_widget("FPCS_Basic_Social_Widget"); } );

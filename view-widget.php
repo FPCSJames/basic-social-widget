@@ -1,4 +1,4 @@
-<ul class="fpcs-basic-social-widget">
+<ul>
 	<?php if( !empty( $facebook ) ): ?>
 	<li>
 		<a href="<?php echo $facebook; ?>" class="facebook" title="Facebook">
