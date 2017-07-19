@@ -26,6 +26,15 @@ class FPCS_Basic_Social_Widget extends WP_Widget {
      * @var      string
      */
     protected $widget_slug = 'fpcs-basic-social-widget';
+	
+	/**
+     * Plugin/widget version.
+     *
+     * @since    1.0.1
+     *
+     * @var      string
+     */
+    protected $widget_version = '1.0.1';
 
 	/**
 	 * Specifies the classname and description, instantiates the widget,
@@ -220,9 +229,9 @@ class FPCS_Basic_Social_Widget extends WP_Widget {
 		$instance = $this->get_settings()[ str_replace( $this->widget_slug. '-', '', $this->id ) ];
 		if ( true === $instance['enqueue_fa'] ) {
 			wp_enqueue_style( $this->widget_slug . '-fontawesome', plugins_url( 'css/font-awesome.min.css', __FILE__ ), [], '4.7.0' );
-			wp_enqueue_style( $this->widget_slug, plugins_url( 'css/widget.min.css', __FILE__ ), [ $this->widget_slug . '-fontawesome' ], '1.0.1' );
+			wp_enqueue_style( $this->widget_slug, plugins_url( 'css/widget.min.css', __FILE__ ), [ $this->widget_slug . '-fontawesome' ], $this->widget_version );
 		} else {
-			wp_enqueue_style( $this->widget_slug, plugins_url( 'css/widget.min.css', __FILE__ ), [], '1.0.1' );
+			wp_enqueue_style( $this->widget_slug, plugins_url( 'css/widget.min.css', __FILE__ ), [], $this->widget_version );
 		}
 		
 		$inline_css = sprintf(
