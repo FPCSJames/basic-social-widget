@@ -3,7 +3,7 @@
  * Plugin Name:       FPCS Basic Social Widget
  * Plugin URI:        https://github.com/FPCSJames/basic-social-widget
  * Description:       Displays a row of clickable social media icons. Best in footer sections.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            James M. Joyce, Flashpoint Computer Services, LLC
  * Author URI:        http://www.flashpointcs.net
  * Text Domain:       fpcs-basic-social-widget
@@ -105,9 +105,13 @@ class FPCS_Basic_Social_Widget extends WP_Widget {
 		$googleplus = esc_url( $googleplus );
 		$pinterest = esc_url( $pinterest );
 		$instagram = esc_url( $instagram );
+		$color_background = esc_attr( $color_background );
+		$color_background_hover = esc_attr( $color_background_hover );
 		
 		$widget_string = $before_widget;
-		$widget_string .= $before_title . $title . $after_title;
+		if( $title ) {
+			$widget_string .= $before_title . $title . $after_title;
+		}
 		
 		ob_start();
 		include( plugin_dir_path( __FILE__ ) . 'view-widget.php' );
@@ -216,9 +220,9 @@ class FPCS_Basic_Social_Widget extends WP_Widget {
 		$instance = $this->get_settings()[ str_replace( $this->widget_slug. '-', '', $this->id ) ];
 		if ( true === $instance['enqueue_fa'] ) {
 			wp_enqueue_style( $this->widget_slug . '-fontawesome', plugins_url( 'css/font-awesome.min.css', __FILE__ ), [], '4.7.0' );
-			wp_enqueue_style( $this->widget_slug, plugins_url( 'css/widget.min.css', __FILE__ ), [ $this->widget_slug . '-fontawesome' ], '1.0.0' );
+			wp_enqueue_style( $this->widget_slug, plugins_url( 'css/widget.min.css', __FILE__ ), [ $this->widget_slug . '-fontawesome' ], '1.0.1' );
 		} else {
-			wp_enqueue_style( $this->widget_slug, plugins_url( 'css/widget.min.css', __FILE__ ), [], '1.0.0' );
+			wp_enqueue_style( $this->widget_slug, plugins_url( 'css/widget.min.css', __FILE__ ), [], '1.0.1' );
 		}
 		
 		$inline_css = sprintf(
